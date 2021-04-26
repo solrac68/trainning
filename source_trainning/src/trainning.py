@@ -6,6 +6,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from joblib import dump, load
 import config
+import uuid
 # Import `Sequential` from `keras.models`
 #from keras.models import Sequential
 from tensorflow.keras import Sequential
@@ -25,8 +26,9 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-_PATH_DATA = config._PATH_DATA
-_PATH_MODELO = config._PATH_MODELO
+
+#_PATH_DATA = config._PATH_DATA
+#_PATH_MODELO = config._PATH_MODELO
 
 def error_measures(Yestimado, Yteorico):
     
@@ -70,12 +72,12 @@ def carga_datos(path):
     
     return (X,y)
     
-def modeloBagOfWords(X):
+def modeloBagOfWords(X, path):
     vector=CountVectorizer(ngram_range=(1, 2))
     modelo = vector.fit(X)
     bagOfWords=modelo.transform(X)
     bagOfWords=bagOfWords.toarray()
-    dump(modelo, _PATH_MODELO)
+    dump(modelo, path)
     
     return bagOfWords
 
@@ -199,13 +201,14 @@ def main_handler1(event, context):
     print(event)
     logger.info(f'Evento:{event}')
 
-    (model,Errores,Precision,Recall,F1score,tiempoEjec,path) = main()
+    (Errores,Precision,Recall,F1score,lapso_tiempo,path_model,path_model_net) = main()
         
     return {
         'statusCode': 200,
         'body': {
-            'path':path,
-            'tiempoEjec':str(tiempoEjec),
+            'path_model':path_model,
+            'path_model_net':path_model_net,
+            'lapso_tiempo':str(lapso_tiempo),
             'mediaPrecision':str(np.mean(Precision))
         }  
     }
@@ -213,17 +216,23 @@ def main_handler1(event, context):
 
 
 def main():
+    tiempo_i = time.time() 
     (X,y) = carga_datos(config._PATH_DATA)
-    bagOfWords = modeloBagOfWords(X)
+    path_model = '/tmp/{}{}'.format(uuid.uuid4(), config._MODELO)
+    bagOfWords = modeloBagOfWords(X,path_model)
     (model,Errores,Precision,Recall,F1score,tiempoEjec) = trainningNetwork(bagOfWords,y)
-    saveModel(config._PATH_MODELO_NET,model)
-    return (model,Errores,Precision,Recall,F1score,tiempoEjec,config._PATH_MODELO)
+    path_model_net = '/tmp/{}{}'.format(uuid.uuid4(), config._MODELO_NET)
+    saveModel(path_model_net,model)
+    lapso_tiempo = time.time() - tiempo_i
+    return (Errores,Precision,Recall,F1score,lapso_tiempo,path_model,path_model_net)
 
-if __name__ == "__main__":   
-    (model,Errores,Precision,Recall,F1score,tiempoEjec,path) = main()   
+if __name__ == "__main__":
+    tiempo_i = time.time()   
+    (Errores,Precision,Recall,F1score,tiempoEjec,path_model,path_model_net) = main()   
 
     print("\nPrecision: " + str(np.mean(Precision)) + " +/- " + str(np.std(Precision)))
-    print("\nModelo almacenado en: {0}".format(config._PATH_MODELO))
+    lapso_tiempo = time.time() - tiempo_i
+    print(f"Modelo almacenado en: {path_model_net} tiempo total: {lapso_tiempo} s")
 
 
 
