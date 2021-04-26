@@ -1,0 +1,561 @@
+Arrancar y parar docker
+
+# docker
+
+docker                         dockerd-rootless.sh
+docker-compose                 docker-init
+dockerd                        docker-proxy
+dockerd-rootless-setuptool.sh
+
+dockerd:Es el demonio QUE PERMITE arrancar y parar docker
+
+Comprueba estado del servicio
+# systemctl status docker
+
+Arrancar el servicio de docker
+# systemctl start docker
+
+
+Parar el servicio de docker
+# systemctl stop docker
+
+Activar el servicio para que arranque cada vez que se inicia la máquina
+# systemctl enable docker
+
+Agregando el usuario al grupo de administración de docker
+# sudo usermod -a -G docker carlos
+
+
+
+# docker run -it -v /home/carlos/Proyectos/Python/aws/pgrado/dir1:/dir1 --name ubuntu2 ubuntu 
+# docker run -it -v /datos --name ubuntu4 ubuntu bash
+# docker run -it --name ubuntu5 --volumes-from ubuntu4 ubuntu bash
+# docker volume create vol2
+# docker volume inspect vol2
+# docker run -it --name ubuntu7 -v vol2:/dir1 ubuntu bash
+# docker run -it --name ubunto8 -v vol2:/datos:ro ubuntu bash
+# docker volume rm 92033ddd1c60a39d8f490cd066dad524afb65422f8c4c8e065a31c6a9a21b584
+# docker volume prune
+Borrar contenedores
+# docker rm `docker ps -aq`
+Borrar imagenes
+# docker rmi `docker images -aq`
+
+Carpeta compartida por defecto: /var/lib/docker/volumes
+
+# apt-get update
+# apt-get install wget
+
+# docker start -i ubuntu1
+# docker stop ubuntu1 
+# docker diff ubuntu1
+
+-Creación de imagenes desde contenedores
+# docker commit ubuntu1 mi_ubuntu
+# docker image ls
+# docker run -it mi_ubuntu bash
+root@be56f7eba38e:/# wget
+wget: missing URL
+Usage: wget [OPTION]... [URL]...
+
+------------------------------------Creación de imagenes desde Dockerfile ---------------------------------
+# cat Dockerfile
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+---------------------------------
+# docker build -t imagen_python .
+# docker images
+REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
+imagen_python   latest    69af8934d1d3   42 seconds ago   137MB
+# docker run -it imagen_python python
+Python 2.7.18 (default, Mar  8 2021, 13:02:45) 
+[GCC 9.3.0] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+
+
+# cat Dockerfile
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping 
+-------------------------------------
+# docker build -t imagen_python:v1 .
+# docker images 
+REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
+imagen_python   v1        e32ce2dc6b07   5 minutes ago   233MB
+imagen_python   latest    69af8934d1d3   2 hours ago     137MB
+# docker run -it imagen_python:v1 bash
+
+
+# cat Dockerfile
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+CMD echo "Welcome to this container"
+-----------------------------------
+# docker build -t image:v1 . 
+# docker images
+REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
+image           v1        00f535a60f01   27 seconds ago   233MB
+imagen_python   v1        e32ce2dc6b07   16 minutes ago   233MB
+imagen_python   latest    69af8934d1d3   2 hours ago      137MB
+.
+.
+# docker run -it --rm image:v1       
+Welcome to this container
+# docker rmi image:v1
+
+# cat Dockerfile
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+CMD ["echo","Welcome to this container"]
+
+# cat Dockerfile
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+CMD ["/bin/bash"]
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+ENTRYPOINT ["/bin/bash"]
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+ENTRYPOINT ["df"]
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+RUN mkdir /datos
+WORKDIR /datos
+RUN touch f1.txt
+ENTRYPOINT ["/bin/bash"]
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+RUN mkdir /datos
+WORKDIR /datos
+RUN touch f1.txt
+RUN mkdir /datos2
+WORKDIR /datos2
+RUN touch f2.txt
+ENTRYPOINT ["/bin/bash"]
+
+
+# ls -lt
+total 4
+-rw-r--r-- 1 root root   0 abr  3 18:53 index.html
+-rw-r--r-- 1 root root   0 abr  3 18:53 app.log
+-rw-r--r-- 1 root root 282 abr  3 18:46 Dockerfile
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+RUN mkdir /datos
+WORKDIR /datos
+RUN touch f1.txt
+RUN mkdir /datos2
+WORKDIR /datos2
+RUN touch f2.txt
+COPY index.html .
+COPY app.log /datos
+ENTRYPOINT ["/bin/bash"]
+
+
+# docker build -t image:v4 .
+# docker run -it --rm image:v4
+root@40ae43d7a9ee:/datos2# ls
+f2.txt  index.html
+
+root@40ae43d7a9ee:/datos# ls -lt
+total 0
+-rw-r--r-- 1 root root 0 Apr  3 23:53 app.log
+-rw-r--r-- 1 root root 0 Apr  3 23:46 f1.txt
+
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+##WORKDIR##
+RUN mkdir /datos
+WORKDIR /datos
+RUN touch f1.txt
+RUN mkdir /datos2
+WORKDIR /datos2
+RUN touch f2.txt
+
+##COPY##
+COPY index.html .
+COPY app.log /datos
+
+##ADD##
+ADD docs docs
+ADD f* /datos/
+ADD f.tar .
+
+##ENTRYPOINT##
+ENTRYPOINT ["/bin/bash"]
+
+
+docker build -t image:v5 .
+
+arlos-VivoBook-15-ASUS-Laptop-X542UF# docker run -it --rm image:v5 
+root@54ba86fa3bd7:/datos2# ls
+docs  f1  f2  f2.txt  f3  f4  f5  index.html
+
+root@54ba86fa3bd7:/# cd datos
+root@54ba86fa3bd7:/datos# ls -lt
+total 0
+-rw-r--r-- 1 root root 0 Apr  4 00:04 f5
+-rw-r--r-- 1 root root 0 Apr  4 00:04 f4
+-rw-r--r-- 1 root root 0 Apr  4 00:04 f3
+-rw-r--r-- 1 root root 0 Apr  4 00:03 f2
+-rw-r--r-- 1 root root 0 Apr  4 00:03 f1
+-rw-r--r-- 1 root root 0 Apr  3 23:53 app.log
+-rw-r--r-- 1 root root 0 Apr  3 23:46 f1.txt
+
+--Variables ---
+
+# docker run -it --rm --env x=10 image:v4
+root@dabc4c12c248:/datos2# env
+root@dabc4c12c248:/datos2# env
+HOSTNAME=dabc4c12c248
+PWD=/datos2
+x=10
+HOME=/root
+
+----------------------------------------------------------------
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+##WORKDIR##
+RUN mkdir /datos
+WORKDIR /datos
+RUN touch f1.txt
+RUN mkdir /datos2
+WORKDIR /datos2
+RUN touch f2.txt
+
+##COPY##
+COPY index.html .
+COPY app.log /datos
+
+##ADD##
+ADD docs docs
+ADD f* /datos/
+ADD f.tar .
+
+##ENV##
+ENV dir=/data dir1=/data1
+RUN mkdir $dir && mkdir $dir1
+
+##ENTRYPOINT##
+ENTRYPOINT ["/bin/bash"]
+
+docker build -t image:v6 .
+----------------------------------------------------
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+##WORKDIR##
+RUN mkdir /datos
+WORKDIR /datos
+RUN touch f1.txt
+RUN mkdir /datos2
+WORKDIR /datos2
+RUN touch f2.txt
+
+##COPY##
+COPY index.html .
+COPY app.log /datos
+
+##ADD##
+ADD docs docs
+ADD f* /datos/
+ADD f.tar .
+
+##ENV##
+ENV dir=/data dir1=/data1
+RUN mkdir $dir && mkdir $dir1
+
+##ARG##
+ARG dir2
+RUN mkdir $dir2
+
+##ENTRYPOINT##
+ENTRYPOINT ["/bin/bash"]
+
+# docker build -t image:v7 --build-arg dir2=/data2 .
+root@e28fd963535c:/datos2# cd ..
+root@e28fd963535c:/# ls
+bin   data   data2  datos2
+-----------------------------
+File: add_user.sh
+adduser $user_docker
+# chmod +x add_user.sh
+# ls -l add_user.sh 
+-rwxr-xr-x 1 root root 22 abr  4 07:43 add_user.sh
+----------------------------------------
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+##WORKDIR##
+RUN mkdir /datos
+WORKDIR /datos
+RUN touch f1.txt
+RUN mkdir /datos2
+WORKDIR /datos2
+RUN touch f2.txt
+
+##COPY##
+COPY index.html .
+COPY app.log /datos
+
+##ADD##
+ADD docs docs
+ADD f* /datos/
+ADD f.tar .
+
+##ENV##
+ENV dir=/data dir1=/data1
+RUN mkdir $dir && mkdir $dir1
+
+##ARG##
+ARG dir2
+RUN mkdir $dir2
+ARG user
+ENV user_docker $user
+ADD add_user.sh /datos2
+RUN /datos2/add_user.sh
+
+##ENTRYPOINT##
+ENTRYPOINT ["/bin/bash"]
+
+# docker build -t image:v8 --build-arg dir2=/data2 --build-arg user=tom .
+
+# docker run -it --rm image:v8
+root@dc96967f123f:/datos2#
+root@dc96967f123f:/datos2# cat /etc/passwd
+tom:x:1000:1000:,,,:/home/tom:/bin/bash
+
+
+# cat /etc/passwd
+
+-------------------------------------------
+------------------EXPOSE----------------------------------
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+##WORKDIR##
+RUN mkdir /datos
+WORKDIR /datos
+RUN touch f1.txt
+RUN mkdir /datos2
+WORKDIR /datos2
+RUN touch f2.txt
+
+##COPY##
+COPY index.html .
+COPY app.log /datos
+
+##ADD##
+ADD docs docs
+ADD f* /datos/
+ADD f.tar .
+
+##ENV##
+ENV dir=/data dir1=/data1
+RUN mkdir $dir && mkdir $dir1
+
+##ARG##
+#ARG dir2
+#RUN mkdir $dir2
+#ARG user
+#ENV user_docker $user
+#ADD add_user.sh /datos2
+#RUN /datos2/add_user.sh
+ARG DEBIAN_FRONTEND=noninteractive
+
+##EXPOSE##
+RUN apt-get update && apt-get install -y apache2
+#RUN apt-get install –y apache2-utils
+EXPOSE 80
+ADD entrypoint.sh /datos2
+
+##CMD##
+CMD /datos2/entrypoint.sh
+------------------------------------
+
+# docker run -it --rm -p 8080:80 image:v9
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
+root@6de33f273f67:/datos2# ls
+docs  entrypoint.sh  f1  f2  f2.txt  f3  f4  f5  index.html
+root@6de33f273f67:/datos2# cat entrypoint.sh 
+apache2ctl start
+/bin/bash
+
+------VOLUME-------
+# docker volume ls
+DRIVER    VOLUME NAME
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python
+RUN echo 1.0 >> /etc/version && apt-get install -y git \
+    && apt-get install -y iputils-ping
+##WORKDIR##
+RUN mkdir /datos
+WORKDIR /datos
+RUN touch f1.txt
+RUN mkdir /datos2
+WORKDIR /datos2
+RUN touch f2.txt
+
+##COPY##
+COPY index.html .
+COPY app.log /datos
+
+##ADD##
+ADD docs docs
+ADD f* /datos/
+ADD f.tar .
+
+##ENV##
+ENV dir=/data dir1=/data1
+RUN mkdir $dir && mkdir $dir1
+
+##ARG##
+#ARG dir2
+#RUN mkdir $dir2
+#ARG user
+#ENV user_docker $user
+#ADD add_user.sh /datos2
+#RUN /datos2/add_user.sh
+ARG DEBIAN_FRONTEND=noninteractive
+
+##EXPOSE##
+RUN apt-get update && apt-get install -y apache2
+#RUN apt-get install –y apache2-utils
+EXPOSE 80
+ADD entrypoint.sh /datos2
+
+##VOLUME##
+ADD paginas /var/www/html
+VOLUME ["/var/www/html"]
+
+##CMD##
+CMD /datos2/entrypoint.sh
+
+##ENTRYPOINT##
+#ENTRYPOINT ["/bin/bash"]
+
+# docker build -t image:v10
+# docker run -it --rm -p 8080:80 --name c1 image:v10
+
+http://localhost:8080/
+
+# docker volume ls
+DRIVER    VOLUME NAME
+local     ea4d8bdc363bb445a58464100b5b07d4e6bea1c2308cafde3c6b9f07984a1edb
+
+# cd /var/lib/docker/volumes/
+
+# ls -lt
+total 28
+drwx-----x 3 root root  4096 abr  4 14:52 ea4d8bdc363bb445a58464100b5b07d4e6bea1c2308cafde3c6b9f07984a1edb
+-rw------- 1 root root 32768 abr  4 14:52 metadata.db
+brw------- 1 root root  8, 2 abr  2 16:43 backingFsBlockDev
+
+carlos-VivoBook-15-ASUS-Laptop-X542UF# cd _data 
+carlos-VivoBook-15-ASUS-Laptop-X542UF# ls
+images	index.html  style.css
+carlos-VivoBook-15-ASUS-Laptop-X542UF#
+
+# docker run -it --rm -p 9080:80 --volumes-from c1 --name c2 image:v10
+
+http://localhost:9080/
+
+
+
+---------Subir DuckeHub ----------------
+
+# docker login
+username: solrac2013
+pass:Colombia2020
+
+# docker image tag image:v10 solrac2013/image:v10
+# docker push solrac2013/image:v10
+Verificar imagen subida en https://hub.docker.com/
+The push refers to repository [docker.io/solrac2013/image]
+f9feb44c4d83: Pushed 
+3244a7ed9a80: Pushed 
+ea08f5924c75: Pushed 
+71a90351f24c: Pushed 
+03012de52e83: Pushed 
+bcf4d72226ed: Pushed 
+5f4b293806a7: Pushed 
+9560d3bfe4cf: Pushed 
+11701fd97b84: Pushed 
+ea5247e185e4: Pushed 
+1daa7df6c58f: Pushed 
+f42393c8859c: Pushed 
+7d59ae54ff8d: Pushed 
+a11bef840a80: Pushed 
+6f5e37c087b6: Pushed 
+7992391b045c: Pushed 
+d4dfaa212623: Mounted from library/ubuntu 
+cba97cc5811c: Pushed 
+0c78fac124da: Pushed 
+v10: digest: sha256:9f3d0bf964abb46cc8c2bb0ddd32d8c8b7ab27d2378048dd9b26604faf9a4207 size: 4277
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
