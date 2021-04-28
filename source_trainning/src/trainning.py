@@ -258,19 +258,25 @@ def put_model(idFile:str, file_model:str, file_model_mlp:str, bucket:str):
     return response
 
 def handler(event, context):
-    (nombreTabla, keys) = ("",[])
-    try:
-        (nombreTabla, keys) = main_handler2(event, context)
-    except:
-        pass
+    #(nombreTabla, keys) = ("",[])
+    #try:
+    (nombreTabla, keys) = main_handler2(event, context)
+    #except:
+    #    pass
+    return {
+        'statusCode': 200,
+        "nombreTabla": nombreTabla,
+        "keys":keys
+    }
 
-    return main_handler1(nombreTabla, keys)
+    #return main_handler1(nombreTabla, keys)
 
 def main_handler2(event, context):
     ### No borrar #######
-    print(event)
+    #print(event)
     logger.info(f'Evento:{event}')
     nombreTabla = ""
+    keys = []
     for record in event['Records']:
         print("test")
         #payload = record['body']
@@ -280,10 +286,12 @@ def main_handler2(event, context):
             name = r['s3']['bucket']['name']
             key = r['s3']['object']['key']
             keys.append(key)
-            print(f"El nombre del bucket es : {name}")
-            print(f"El nombre de la clave es : {key}")
+            #print(f"El nombre del bucket es : {name}")
+            #print(f"El nombre de la clave es : {key}")
         nombreTabla = payload['responsePayload']['body']['tablaDynamodb']
-        
+    
+    print(f"El nombre de la tabla es : {nombreTabla}")
+    print(f"El nombre de las claves son : {keys}")
     return (nombreTabla, keys)
 
 
