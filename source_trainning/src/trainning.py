@@ -7,15 +7,8 @@ from sklearn.model_selection import train_test_split
 from joblib import dump, load
 import config
 import uuid
-# Import `Sequential` from `keras.models`
-#from keras.models import Sequential
 from tensorflow.keras import Sequential
-
-# Import `Dense` from `keras.layers`
-#from keras.layers import Dense, Dropout, Activation
 from tensorflow.keras.layers import Dense, Dropout, Activation
-
-#import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold
 import time
 
@@ -92,8 +85,6 @@ def query_trainning(nombreTabla, file):
     for califi in calificaciones:
         califi['calificacion'] = int(califi['calificacion'])
     return calificaciones
-
-    #df = DataFrame (response['Items'],columns=['texto','calificacion'])
     
 
 def load_data_from_dynamo(nombreTabla, files:[]):
@@ -113,32 +104,6 @@ def carga_datos2(nombreTabla, files:[]):
     y=np.asarray(y)
     
     return (X,y)
-    
-
-# def testQueryTrainning():
-#     file = "Ingesta10.txt"
-#     df = query_trainning(file)
-#     print(df)
-
-# def testQueryTrainning2():
-#     files = ["Ingesta10.txt","Ingesta12.txt"]
-#     df = load_data_from_dynamo(files)
-#     print(df)
-
-# def testQueryTrainning3():
-#     files = ["DB_proyecto_SA2.txt"]
-#     (X,y) = carga_datos2(files)
-#     print("X")
-#     print(X)
-#     print("y")
-#     print(y)
-
-# def testQueryTrainning4():
-#     (X,y) = carga_datos(config._PATH_DATA) 
-#     print("X")
-#     print(X)
-#     print("y")
-#     print(y)
     
 def modeloBagOfWords(X, path):
     vector=CountVectorizer(ngram_range=(1, 2))
@@ -231,9 +196,6 @@ def saveModel(path,model):
 def loadModel(path):
     model = keras.models.load_model(path)
     return model
-
-# def lambda_handler((event,context):
-#     print(f"Evento: {event}")
 
 def upload_file(file_name, bucket, object_name=None):
 
@@ -361,27 +323,11 @@ def main_handler1(nombreTabla, keys):
 
 if __name__ == "__main__":
     keys = ["Ingesta11.txt"]
-    
-    (X,y) = carga_datos2(nombreTabla=config._TABLE_INGEST,files=keys)
 
-    (Errores,Precision,Recall,F1score,lapso_tiempo,path_model,path_model_net,file_model,file_model_mlp) = main(X,y)
-    print(f"Modelos almacenado en: {path_model_net} y {path_model} tiempo total: {lapso_tiempo} s")
-    
-    if upload_file(path_model, config._BUCKET_MODELS, object_name=file_model):
-        print(f"Modelo {file_model} creado en {config._BUCKET_MODELS} S3") 
-    else: 
-        print(f"Error subiendo al modelo {file_model} a S3")
+    response = main_handler1(nombreTabla=config._TABLE_INGEST,keys=keys)
 
+    print(response)
     
-    if upload_file(path_model_net, config._BUCKET_MODELS, object_name=file_model_mlp):
-        print(f"Modelo {file_model_mlp} creado en {config._BUCKET_MODELS} S3") 
-    else: 
-        print(f"Error subiendo al modelo {file_model_mlp} a S3")
-
-    key = '_'.join(keys)
-    delete_model(idFile=key)
-    put_model(idFile=key, file_model=file_model, file_model_mlp=file_model_mlp,bucket=config._BUCKET_MODELS)
-    print(f"Modelos {file_model_mlp} y {file_model} registrados en tabla {config._TABLE_MODELS}")
 
 
 

@@ -2,8 +2,8 @@ from tensorflow import keras
 from joblib import dump, load
 import config
 #from . import config
-_PATH_DATA = config._PATH_DATA
-_PATH_MODELO = config._PATH_MODELO  
+#_PATH_DATA = config._PATH_DATA
+#_PATH_MODELO = config._PATH_MODELO  
 
         
 def loadModels(path, path2):
@@ -19,7 +19,11 @@ def prediccion(opiniones, new_model, bow_model):
 
 if __name__ == "__main__":
 
-    (new_model,bow_model) = loadModels(config._PATH_MODELO_NET , config._PATH_MODELO)
+    path_modelo = "/tmp/daaad05a-ab10-49e3-8500-4acc651713e0_model.joblib"
+    path_modelo_net = "/tmp/1f9cedd1-9dc3-4556-89ae-38adebc6d3ed_modelmlp.h5"
+    (new_model,bow_model) = loadModels(path_modelo_net , path_modelo)
+
+    
 
     opiniones = ["Lenovo Thinkpad es una excelente máquina, la recomiendo.", 
     "Iphone no es tan bueno como dicen, por lo menos eso creo para el precio tan alto que tiene.",
