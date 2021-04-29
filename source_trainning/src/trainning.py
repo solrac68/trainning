@@ -263,13 +263,13 @@ def handler(event, context):
     (nombreTabla, keys) = main_handler2(event, context)
     #except:
     #    pass
-    return {
-        'statusCode': 200,
-        "nombreTabla": nombreTabla,
-        "keys":keys
-    }
+    # return {
+    #     'statusCode': 200,
+    #     "nombreTabla": nombreTabla,
+    #     "keys":keys
+    # }
 
-    #return main_handler1(nombreTabla, keys)
+    return main_handler1(nombreTabla, keys)
 
 def main_handler2(event, context):
     ### No borrar #######
@@ -296,7 +296,11 @@ def main_handler2(event, context):
 
 
 def main_handler1(nombreTabla, keys):
+    logger.info(f'nombreTabla:{nombreTabla}')
+    logger.info(f'keys:{keys}')
     (X,y) = carga_datos2(nombreTabla,keys)
+    logger.info(f'tamaño X:{X.shape}')
+    logger.info(f'tamaño y:{y.shape}')
     #print(X.shape,y.shape)
 
     (Errores,Precision,Recall,F1score,lapso_tiempo,path_model,path_model_net,file_model,file_model_mlp) = main(X,y)
