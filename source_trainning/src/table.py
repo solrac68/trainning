@@ -66,7 +66,7 @@ def creandoTablaModelos(tablaName):
         ],
         'ProvisionedThroughput': {
             'ReadCapacityUnits': 10,
-            'WriteCapacityUcdnits': 10
+            'WriteCapacityUnits': 10
         }
     }
     dax_table = create_dax_table(params)
@@ -74,12 +74,12 @@ def creandoTablaModelos(tablaName):
 if __name__ == '__main__':
     try:
         delete_dax_table(config._TABLE_INGEST)
-        #delete_dax_table(config._TABLE_MODELS)
+        delete_dax_table(config._TABLE_MODELS)
     except ClientError:
         pass
 
     creandoTablaIngesta(config._TABLE_INGEST)
-    #creandoTablaModelos(config._TABLE_MODELS)
+    creandoTablaModelos(config._TABLE_MODELS)
 
     
     

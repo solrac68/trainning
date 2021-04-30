@@ -16,6 +16,47 @@ def prediccion(opiniones, new_model, bow_model):
     predicciones = new_model.predict(opn)
     return zip(opiniones, predicciones)
 
+import json
+
+def handler(event, context):
+    # TODO implement
+    
+    ## ESQUEMA event["body"]##
+    # {
+    #   "$schema": "http://json-schema.org/draft-04/schema#",
+    #   "title": "Textos",
+    #   "type": "object",
+    #   "properties": {
+    #     "idmodel": { "type": "string" },
+    #     "opiniones": {
+    #       "type": "array",
+    #       "items": { "type": "string" }
+    #     }
+    #   }
+    # }
+    
+    payload = json.loads(event["body"])
+    # {'idmodel': 'Ingesta11.txt', 'opiniones': ['Lenovo Thinkpad es una excelente máquina, la recomiendo.', 'Las camas estaban mal arregladas']}
+
+    print(type(payload))
+    print(payload)
+    print("idmodel:", payload['idmodel'])
+    print("opiniones:", payload['opiniones'])
+    
+    [print(obj) for obj in payload['opiniones']]
+
+    estado = False
+    
+    return {
+        "statusCode": 200,
+        "headers":{
+            'myHeader':'test'
+        },
+        "body": event["body"],
+        "isBase64Encoded": estado
+    }
+
+
 
 if __name__ == "__main__":
 
