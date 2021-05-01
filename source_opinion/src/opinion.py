@@ -132,26 +132,6 @@ if __name__ == "__main__":
 
     print(resultados)
 
-    # path_modelo = "/tmp/daaad05a-ab10-49e3-8500-4acc651713e0_model.joblib"
-    # path_modelo_net = "/tmp/1f9cedd1-9dc3-4556-89ae-38adebc6d3ed_modelmlp.h5"
-    # (new_model,bow_model) = loadModels(path_modelo_net , path_modelo)
-
-    
-
-    
-
-    # predicciones = prediccion(opiniones,new_model,bow_model)
-
-
-    # print("#########################################################################")
-    # print("############################# Predicción ################################")
-    # print("#########################################################################")
-
-    # resultados = [(op, "Positivo :)" if pr > 0.5 else "Negativo :(") for op, pr in predicciones]
-
-    # [print(f"'{x}' es '{y}'") for (x,y) in resultados]
-
-
     
     
     
