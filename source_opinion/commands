@@ -8,7 +8,7 @@ curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d
 
 aws ecr get-login-password | docker login --username AWS --password-stdin 722246141536.dkr.ecr.us-east-2.amazonaws.com
 
-aws ecr create-repository --repository-name lambda-docker-training --image-scanning-configuration scanOnPush=true
+aws ecr create-repository --repository-name lambda-docker-opinion --image-scanning-configuration scanOnPush=true
 {
     "repository": {
         "repositoryArn": "arn:aws:ecr:us-east-2:722246141536:repository/lambda-docker-training",

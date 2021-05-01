@@ -57,13 +57,13 @@ def opinionGen(idmodel,opiniones):
     #     "body": event["body"],
     #     "isBase64Encoded": estado
     # }
-
+    payload = json.loads(jsonStr)
     return {
         "statusCode": 200,
         "headers":{
             'myHeader':'test'
         },
-        "body": jsonStr,
+        "body": payload,
         "isBase64Encoded": estado
     }
 
