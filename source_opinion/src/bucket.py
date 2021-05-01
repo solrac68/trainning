@@ -6,10 +6,11 @@ import logging
 #dynamodb = boto3.resource('dynamodb')
 #table = dynamodb.Table('data2')
 s3 = boto3.resource('s3')
+s3_client = boto3.client('s3')
 
 def download_file(bucket,file):
     download_path = '/tmp/{}'.format(file)
-    s3.download_file(bucket, file, download_path)
+    s3_client.download_file(bucket, file, download_path)
 
     return download_path
 
