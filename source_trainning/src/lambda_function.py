@@ -60,8 +60,3 @@ def lambda_handler(event, context):
             'tablaDynamodb': config._TABLE_INGEST
         }
     }
-
-if __name__ == "__main__":
-    bucket = "files-files-training"
-    key = "Ingesta11.txt"
-    lambda_handler(bucket, key)
