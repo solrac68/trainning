@@ -258,16 +258,7 @@ def put_model(idFile:str, file_model:str, file_model_mlp:str, bucket:str):
     return response
 
 def handler(event, context):
-    #(nombreTabla, keys) = ("",[])
-    #try:
     (nombreTabla, keys) = main_handler2(event, context)
-    #except:
-    #    pass
-    # return {
-    #     'statusCode': 200,
-    #     "nombreTabla": nombreTabla,
-    #     "keys":keys
-    # }
 
     return main_handler1(nombreTabla, keys)
 
