@@ -11,9 +11,6 @@ COPY /src .
 ##ENTRYPOINT##
 CMD [ "opinion.handler" ]
 
-##ENTRYPOINT##
-#ENTRYPOINT ["/bin/bash"]
-
 
 
 
